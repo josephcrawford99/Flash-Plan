@@ -2,27 +2,27 @@ import SwiftUI
 
 struct ScanScreen: View {
     @Environment(AppModel.self) private var model
-    @State private var session = RoomScanSession()
+    @State private var controller = RoomCaptureController()
 
     var body: some View {
-        CaptureViewBridge(view: session.view)
+        RoomCaptureRepresentable(controller: controller)
             .ignoresSafeArea()
             .overlay(alignment: .bottom) {
-                Button("Done") { session.finish() }
+                Button("Done") { controller.finish() }
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
                     .padding(.bottom, 40)
             }
             .onAppear {
-                session.onComplete = { model.finish($0) }
-                session.start()
+                controller.onComplete = { model.finish($0) }
+                controller.onFailure = { model.fail($0) }
             }
     }
 }
 
-private struct CaptureViewBridge: UIViewRepresentable {
-    let view: UIView
+private struct RoomCaptureRepresentable: UIViewControllerRepresentable {
+    let controller: RoomCaptureController
 
-    func makeUIView(context: Context) -> UIView { view }
-    func updateUIView(_ uiView: UIView, context: Context) {}
+    func makeUIViewController(context: Context) -> RoomCaptureController { controller }
+    func updateUIViewController(_ uiViewController: RoomCaptureController, context: Context) {}
 }

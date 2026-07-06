@@ -10,7 +10,10 @@ enum PhotoSaveResult {
 enum FloorPlanExporter {
     @MainActor
     static func image(for plan: FloorPlan) -> UIImage {
-        let renderer = ImageRenderer(content: FloorPlanView(plan: plan).frame(width: 1000, height: 1000))
+        let content = FloorPlanView(plan: plan)
+            .frame(width: 1000, height: 1000)
+            .environment(\.colorScheme, .light)
+        let renderer = ImageRenderer(content: content)
         renderer.scale = 3
         return renderer.uiImage ?? UIImage()
     }

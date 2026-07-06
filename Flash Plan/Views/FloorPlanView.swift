@@ -46,7 +46,7 @@ struct FloorPlanView: View {
             let midpoint = CGPoint(x: (wall.start.x + wall.end.x) / 2, y: (wall.start.y + wall.end.y) / 2)
             let label = Text(lengthLabel(wall.length))
                 .font(.system(size: 11))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color(white: 0.35))
             context.draw(label, at: geometry.point(midpoint))
         }
     }
@@ -54,7 +54,7 @@ struct FloorPlanView: View {
     private func drawReadout(_ context: inout GraphicsContext, _ size: CGSize) {
         let label = Text("Area \(areaLabel(plan.area))    Perimeter \(lengthLabel(plan.perimeter))")
             .font(.system(size: 13, weight: .medium))
-            .foregroundStyle(.primary)
+            .foregroundStyle(.black)
         context.draw(label, at: CGPoint(x: size.width / 2, y: size.height - 18))
     }
 

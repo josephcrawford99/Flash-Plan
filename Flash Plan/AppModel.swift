@@ -11,7 +11,7 @@ enum Route: Equatable {
 final class AppModel {
     var route: Route = .home
     var scanMessage = ""
-    let isSupported = RoomScanSession.isSupported
+    let isSupported = RoomCaptureController.isSupported
 
     func startScan() {
         scanMessage = ""
@@ -25,5 +25,10 @@ final class AppModel {
         } else {
             route = .result(plan)
         }
+    }
+
+    func fail(_ message: String) {
+        scanMessage = message
+        route = .home
     }
 }
