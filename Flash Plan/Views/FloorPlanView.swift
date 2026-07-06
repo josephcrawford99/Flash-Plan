@@ -7,7 +7,8 @@ struct FloorPlanView: View {
         Canvas { context, size in
             let geometry = PlanGeometry(plan: plan, size: size)
             drawWalls(&context, geometry)
-            drawOpenings(&context, geometry)
+            drawWindows(&context, geometry)
+            drawDoors(&context, geometry)
             drawLengths(&context, geometry)
             drawReadout(&context, size)
         }
@@ -23,21 +24,26 @@ struct FloorPlanView: View {
         context.stroke(path, with: .color(.black), style: StrokeStyle(lineWidth: 3, lineCap: .round))
     }
 
-    private func drawOpenings(_ context: inout GraphicsContext, _ geometry: PlanGeometry) {
-        for opening in plan.openings {
-            let start = geometry.point(opening.start)
-            let end = geometry.point(opening.end)
+    private func drawWindows(_ context: inout GraphicsContext, _ geometry: PlanGeometry) {
+        for window in plan.windows {
             var gap = Path()
-            gap.move(to: start)
-            gap.addLine(to: end)
+            gap.move(to: geometry.point(window.start))
+            gap.addLine(to: geometry.point(window.end))
             context.stroke(gap, with: .color(.white), style: StrokeStyle(lineWidth: 5))
+            context.stroke(gap, with: .color(.blue), lineWidth: 2)
+        }
+    }
 
-            switch opening.kind {
-            case .door:
-                context.stroke(doorArc(from: start, to: end), with: .color(.gray), lineWidth: 1)
-            case .window:
-                context.stroke(gap, with: .color(.blue), lineWidth: 2)
-            }
+    private func drawDoors(_ context: inout GraphicsContext, _ geometry: PlanGeometry) {
+        for door in plan.doors {
+            let hinge = geometry.point(door.start)
+            let closed = geometry.point(door.end)
+            let open = geometry.point(door.swing)
+            var gap = Path()
+            gap.move(to: hinge)
+            gap.addLine(to: closed)
+            context.stroke(gap, with: .color(.white), style: StrokeStyle(lineWidth: 5))
+            context.stroke(doorArc(hinge: hinge, from: closed, to: open), with: .color(.gray), lineWidth: 1)
         }
     }
 
@@ -58,17 +64,21 @@ struct FloorPlanView: View {
         context.draw(label, at: CGPoint(x: size.width / 2, y: size.height - 18))
     }
 
-    private func doorArc(from start: CGPoint, to end: CGPoint) -> Path {
-        let radius = hypot(end.x - start.x, end.y - start.y)
-        let angle = atan2(end.y - start.y, end.x - start.x)
+    private func doorArc(hinge: CGPoint, from closed: CGPoint, to open: CGPoint) -> Path {
+        let radius = hypot(closed.x - hinge.x, closed.y - hinge.y)
+        let closedAngle = atan2(closed.y - hinge.y, closed.x - hinge.x)
+        let openAngle = atan2(open.y - hinge.y, open.x - hinge.x)
+        var delta = openAngle - closedAngle
+        while delta > .pi { delta -= 2 * .pi }
+        while delta < -.pi { delta += 2 * .pi }
         var path = Path()
-        path.move(to: end)
+        path.move(to: closed)
         path.addArc(
-            center: start,
+            center: hinge,
             radius: radius,
-            startAngle: .radians(Double(angle)),
-            endAngle: .radians(Double(angle) - .pi / 2),
-            clockwise: true
+            startAngle: .radians(Double(closedAngle)),
+            endAngle: .radians(Double(closedAngle + delta)),
+            clockwise: delta < 0
         )
         return path
     }

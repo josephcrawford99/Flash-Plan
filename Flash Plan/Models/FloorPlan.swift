@@ -1,29 +1,50 @@
 import Foundation
 import CoreGraphics
 
-struct Wall: Codable, Hashable {
+protocol PlanFeature {
+    func transformed(by move: (CGPoint) -> CGPoint) -> Self
+}
+
+struct Wall: Codable, Hashable, PlanFeature {
     let start: CGPoint
     let end: CGPoint
 
     var length: Double {
         Double(hypot(end.x - start.x, end.y - start.y))
     }
+
+    func transformed(by move: (CGPoint) -> CGPoint) -> Wall {
+        Wall(start: move(start), end: move(end))
+    }
 }
 
-enum OpeningKind: Codable {
-    case door
-    case window
-}
-
-struct Opening: Codable, Hashable {
-    let kind: OpeningKind
+struct Door: Codable, Hashable, PlanFeature {
     let start: CGPoint
     let end: CGPoint
+    let swing: CGPoint
+
+    var width: Double {
+        Double(hypot(end.x - start.x, end.y - start.y))
+    }
+
+    func transformed(by move: (CGPoint) -> CGPoint) -> Door {
+        Door(start: move(start), end: move(end), swing: move(swing))
+    }
+}
+
+struct Window: Codable, Hashable, PlanFeature {
+    let start: CGPoint
+    let end: CGPoint
+
+    func transformed(by move: (CGPoint) -> CGPoint) -> Window {
+        Window(start: move(start), end: move(end))
+    }
 }
 
 struct FloorPlan: Codable, Hashable {
     let walls: [Wall]
-    let openings: [Opening]
+    let doors: [Door]
+    let windows: [Window]
 
     var isEmpty: Bool { walls.isEmpty }
 
@@ -66,9 +87,11 @@ extension FloorPlan {
             Wall(start: CGPoint(x: 4, y: 3), end: CGPoint(x: 0, y: 3)),
             Wall(start: CGPoint(x: 0, y: 3), end: CGPoint(x: 0, y: 0))
         ],
-        openings: [
-            Opening(kind: .door, start: CGPoint(x: 1, y: 0), end: CGPoint(x: 1.9, y: 0)),
-            Opening(kind: .window, start: CGPoint(x: 4, y: 1), end: CGPoint(x: 4, y: 2))
+        doors: [
+            Door(start: CGPoint(x: 1, y: 0), end: CGPoint(x: 1.9, y: 0), swing: CGPoint(x: 1, y: 0.9))
+        ],
+        windows: [
+            Window(start: CGPoint(x: 4, y: 1), end: CGPoint(x: 4, y: 2))
         ]
     )
 }
