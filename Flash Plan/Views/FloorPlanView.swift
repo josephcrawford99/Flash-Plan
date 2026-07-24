@@ -329,6 +329,7 @@ private func areaLabel(_ squareMeters: Double) -> String {
     return unitFormatter.string(from: usesMetric ? measurement : measurement.converted(to: .squareFeet))
 }
 
+#if DEBUG
 #Preview("Sample") {
     FloorPlanView(plan: .sample)
 }
@@ -357,3 +358,4 @@ private extension FloorPlan {
         return FloorPlan(walls: walls, doors: doors, windows: windows)
     }
 }
+#endif
