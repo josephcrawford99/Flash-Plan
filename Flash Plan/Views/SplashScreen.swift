@@ -6,7 +6,7 @@ struct SplashScreen: View {
         VStack {
             HStack {
                 Text("Flash Plan")
-                    .font(.largeTitle.bold())
+                    .font(.appLargeTitle)
                 Spacer()
             }
             Spacer()

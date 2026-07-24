@@ -10,7 +10,7 @@ struct HomeView: View {
                 .font(.system(size: 64))
                 .foregroundStyle(.tint)
             Text("Flash Plan")
-                .font(.largeTitle.bold())
+                .font(.appLargeTitle)
             content
             Spacer()
         }
@@ -26,7 +26,7 @@ struct HomeView: View {
             if !router.scanMessage.isEmpty {
                 Text(router.scanMessage)
                     .multilineTextAlignment(.center)
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(.appError)
             }
             Spacer()
             Button("Scan a room") { router.startScan() }

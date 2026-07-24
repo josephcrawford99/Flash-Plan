@@ -109,7 +109,7 @@ struct FloorPlanView: View {
             normal = CGPoint(x: -normal.x, y: -normal.y)
         }
         let label = Text(lengthLabel(length))
-            .font(.system(size: 11))
+            .font(.appPlanLabel)
             .foregroundStyle(color)
         return LabelRequest(text: label, anchor: mid, normal: normal,
                             tangent: CGPoint(x: dx / len, y: dy / len), length: length)
@@ -121,7 +121,7 @@ struct FloorPlanView: View {
 
     private var readoutText: Text {
         Text("Area \(areaLabel(plan.area))    Perimeter \(lengthLabel(plan.perimeter))")
-            .font(.system(size: 13, weight: .medium))
+            .font(.appPlanReadout)
             .foregroundStyle(.black)
     }
 

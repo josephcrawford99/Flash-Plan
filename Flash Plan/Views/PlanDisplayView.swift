@@ -19,7 +19,7 @@ struct PlanDisplayView: View {
 
             if !viewModel.status.message.isEmpty {
                 Text(viewModel.status.message)
-                    .font(.callout)
+                    .font(.appCallout)
                     .foregroundStyle(viewModel.status.color)
             }
 
@@ -56,8 +56,9 @@ private extension SaveStatus {
 
     var color: Color {
         switch self {
-        case .saved: .green
-        default: .secondary
+        case .idle: .secondary
+        case .saved: .appAccent
+        case .permissionDenied, .failed: .appError
         }
     }
 }

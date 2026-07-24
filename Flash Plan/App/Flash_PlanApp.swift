@@ -12,6 +12,10 @@ struct Flash_PlanApp: App {
     @State private var router = AppRouter()
     @State private var showSplash = true
 
+    init() {
+        AppFont.registerIfNeeded()
+    }
+
     var body: some Scene {
         WindowGroup {
             ZStack {
@@ -29,6 +33,8 @@ struct Flash_PlanApp: App {
                 }
             }
             .environment(router)
+            .font(.appBody)
+            .tint(.appAccent)
             .task {
                 try? await Task.sleep(for: .seconds(1.2))
                 withAnimation { showSplash = false }
