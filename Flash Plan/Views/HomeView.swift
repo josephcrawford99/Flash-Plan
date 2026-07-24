@@ -1,7 +1,7 @@
 import SwiftUI
 
-struct HomeScreen: View {
-    @Environment(AppModel.self) private var model
+struct HomeView: View {
+    @Environment(AppRouter.self) private var router
 
     var body: some View {
         VStack(spacing: 24) {
@@ -19,17 +19,17 @@ struct HomeScreen: View {
 
     @ViewBuilder
     private var content: some View {
-        if model.isSupported {
+        if RoomCaptureController.isSupported {
             Text("Scan a room to get a 2D floorplan you can save to Photos.")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
-            if !model.scanMessage.isEmpty {
-                Text(model.scanMessage)
+            if !router.scanMessage.isEmpty {
+                Text(router.scanMessage)
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.orange)
             }
             Spacer()
-            Button("Scan a room") { model.startScan() }
+            Button("Scan a room") { router.startScan() }
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
         } else {
@@ -39,3 +39,10 @@ struct HomeScreen: View {
         }
     }
 }
+
+#if DEBUG
+#Preview {
+    HomeView()
+        .environment(AppRouter())
+}
+#endif

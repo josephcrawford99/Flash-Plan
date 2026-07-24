@@ -8,10 +8,9 @@ enum Route: Equatable {
 
 @MainActor
 @Observable
-final class AppModel {
+final class AppRouter {
     var route: Route = .home
     var scanMessage = ""
-    let isSupported = RoomCaptureController.isSupported
 
     func startScan() {
         scanMessage = ""

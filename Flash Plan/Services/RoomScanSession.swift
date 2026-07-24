@@ -9,6 +9,7 @@ final class RoomCaptureController: UIViewController, RoomCaptureViewDelegate {
 
     var onComplete: (FloorPlan) -> Void = { _ in }
     var onFailure: (String) -> Void = { _ in }
+    var onReady: () -> Void = {}
 
     private let captureView = RoomCaptureView(frame: .zero)
     private var isRunning = false
@@ -65,6 +66,11 @@ final class RoomCaptureController: UIViewController, RoomCaptureViewDelegate {
         ScanDiagnostics.log.info("Starting room capture session")
         captureView.captureSession.run(configuration: RoomCaptureSession.Configuration())
         isRunning = true
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(600))
+            guard isRunning else { return }
+            onReady()
+        }
     }
 
     func captureView(shouldPresent roomDataForProcessing: CapturedRoomData, error: Error?) -> Bool {

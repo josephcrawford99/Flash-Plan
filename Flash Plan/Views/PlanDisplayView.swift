@@ -1,48 +1,40 @@
 import SwiftUI
 
-struct ResultScreen: View {
-    let plan: FloorPlan
-    @Environment(AppModel.self) private var model
+struct PlanDisplayView: View {
+    @State private var viewModel: PlanDisplayViewModel
     @Environment(\.openURL) private var openURL
-    @State private var status = SaveStatus.idle
+
+    init(plan: FloorPlan, router: AppRouter) {
+        _viewModel = State(initialValue: PlanDisplayViewModel(plan: plan, router: router))
+    }
 
     var body: some View {
         VStack(spacing: 16) {
-            FloorPlanView(plan: plan)
+            FloorPlanView(plan: viewModel.plan)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .overlay {
                     RoundedRectangle(cornerRadius: 12).stroke(.quaternary)
                 }
                 .padding()
 
-            if !status.message.isEmpty {
-                Text(status.message)
+            if !viewModel.status.message.isEmpty {
+                Text(viewModel.status.message)
                     .font(.callout)
-                    .foregroundStyle(status.color)
+                    .foregroundStyle(viewModel.status.color)
             }
 
-            if status == .permissionDenied {
+            if viewModel.status == .permissionDenied {
                 Button("Open Settings") { openSettings() }
             }
 
             HStack(spacing: 12) {
-                Button("Scan again") { model.startScan() }
+                Button("Scan again") { viewModel.scanAgain() }
                     .buttonStyle(.bordered)
-                Button("Save to Photos") { save() }
+                Button("Save to Photos") { Task { await viewModel.save() } }
                     .buttonStyle(.borderedProminent)
             }
             .controlSize(.large)
             .padding(.bottom)
-        }
-    }
-
-    private func save() {
-        Task {
-            switch await FloorPlanExporter.save(plan) {
-            case .saved: status = .saved
-            case .permissionDenied: status = .permissionDenied
-            case .failed: status = .failed
-            }
         }
     }
 
@@ -52,12 +44,7 @@ struct ResultScreen: View {
     }
 }
 
-private enum SaveStatus: Equatable {
-    case idle
-    case saved
-    case permissionDenied
-    case failed
-
+private extension SaveStatus {
     var message: String {
         switch self {
         case .idle: ""
@@ -74,3 +61,9 @@ private enum SaveStatus: Equatable {
         }
     }
 }
+
+#if DEBUG
+#Preview {
+    PlanDisplayView(plan: .sample, router: AppRouter())
+}
+#endif

@@ -80,19 +80,25 @@ struct FloorPlan: Codable, Hashable {
 
 #if DEBUG
 extension FloorPlan {
-    static let sample = FloorPlan(
-        walls: [
-            Wall(start: CGPoint(x: 0, y: 0), end: CGPoint(x: 4, y: 0)),
-            Wall(start: CGPoint(x: 4, y: 0), end: CGPoint(x: 4, y: 3)),
-            Wall(start: CGPoint(x: 4, y: 3), end: CGPoint(x: 0, y: 3)),
-            Wall(start: CGPoint(x: 0, y: 3), end: CGPoint(x: 0, y: 0))
-        ],
-        doors: [
-            Door(start: CGPoint(x: 1, y: 0), end: CGPoint(x: 1.9, y: 0), swing: CGPoint(x: 1, y: 0.9))
-        ],
-        windows: [
-            Window(start: CGPoint(x: 4, y: 1), end: CGPoint(x: 4, y: 2))
-        ]
-    )
+    static let sample: FloorPlan = {
+        let a = CGPoint(x: 0, y: 0)
+        let b = CGPoint(x: 4, y: 0)
+        let c = CGPoint(x: 4, y: 3)
+        let d = CGPoint(x: 0, y: 3)
+        return FloorPlan(
+            walls: [
+                Wall(start: a, end: b),
+                Wall(start: b, end: c),
+                Wall(start: c, end: d),
+                Wall(start: d, end: a)
+            ],
+            doors: [
+                Door(start: CGPoint(x: 1, y: 0), end: CGPoint(x: 2, y: 0), swing: CGPoint(x: 1, y: 1))
+            ],
+            windows: [
+                Window(start: CGPoint(x: 4, y: 1), end: CGPoint(x: 4, y: 2))
+            ]
+        )
+    }()
 }
 #endif
